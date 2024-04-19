@@ -1,0 +1,53 @@
+version: '1.0'
+services:
+  frontend:
+    container_name: frontend
+    build: ./frontend_shopper
+    ports:
+      - 3000:3000
+    working_dir: /frontend
+    command: dev
+    volumes: 
+      - ./frontend_shopper/src:/frontend/src
+    healthcheck:
+      test: ["CMD", "lsof", "-t", "-i:3000"]
+      timeout: 10s
+      retries: 5
+  backend:
+    container_name: backend
+    build: ./backend_shopper
+    ports:
+      - 3001:3001
+    working_dir: /backend
+    command: dev 
+    volumes: 
+      - ./backend_shopper/src:/backend/src
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - APP_PORT=3001
+      - DB_USER=root
+      - DB_PASS=password
+      - DB_HOST=db
+      - DB_PORT=3306
+    healthcheck:
+      test: ["CMD", "lsof", "-t", "-i:3001"]
+      timeout: 10s
+      retries: 5
+  db:
+    image: mysql:8.0.34
+    container_name: db
+    ports:
+      - 3306:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=password
+    restart: 'always'
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 10s
+      retries: 5
+    volumes:
+      - ./sql:/docker-entrypoint-initdb.d
+    cap_add:
+      - SYS_NICE
