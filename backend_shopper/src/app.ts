@@ -7,6 +7,7 @@ class App {
     this.app = express();
 
     this.config();
+    this.routes();
     // Para validar se a aplicação está rodando
     this.app.get('/', (req, res) => res.json({ ok: true }));
   }
