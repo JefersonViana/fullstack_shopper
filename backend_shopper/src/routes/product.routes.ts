@@ -1,24 +1,20 @@
 import { Request, Router, Response } from 'express';
 import multer from 'multer';
 
+import ProductController from '../controllers/ProductController';
+import Validate from '../middlewares/Validate';
+
 const router = Router();
+const productController = new ProductController();
 const upload = multer();
 
-router.get('/', (_req: Request, res: Response) => res.json({ ok: 'products ok (GET)'}));
-router.post('/', upload.single('file'), (req: Request, res: Response) => {
-  if (!req.file) {
-    return res.status(400).json({ error: 'Nenhum arquivo enviado.' });
-  }
-  const resultados: any = [];
-  req.file.buffer.toString().split('\n').splice(1).forEach(line => {
-    const [productCode, newPrice] = line.split(',');
-    const value = Number(newPrice.replace('\r', ''));
-    resultados.push({
-      productCode: Number(productCode),
-      newPrice: isNaN(value) ? 0 : Number(value),
-    });
-  });
-  res.json({ ok: 'products ok (POST)', resultados});
+router.get('/', (req: Request, res: Response) => productController.getAllProducts(req, res));
+router.post(
+  '/',
+  upload.single('file'),
+  Validate.validateProducts,
+  (req: Request, res: Response) => {
+  res.status(200).json(req.body.products);
 });
 
 export default router;
