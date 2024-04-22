@@ -1,12 +1,7 @@
 export interface IProduct {
-  code?: bigint;
+  code: bigint;
   name: string;
-  costPrice: number;
-  salesPrice: number;
-  dataValues?: {
-    code: bigint;
-    name: string;
-    costPrice: number;
-    salesPrice: number;
-  };
+  costPrice: string;
+  salesPrice: string;
+  qty?: bigint;
 }

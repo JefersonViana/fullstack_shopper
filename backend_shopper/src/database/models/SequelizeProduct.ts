@@ -44,5 +44,4 @@ SequelizeProduct.init({
   underscored: true,
 });
 
-
 export default SequelizeProduct;
